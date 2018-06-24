@@ -48,7 +48,7 @@ public class MapperUtil {
 				stream().
 				map(this::toLineItemEntity).collect(Collectors.toList()));
 		
-		orderEntity.getLineItems().forEach(item -> item.setOrder(orderEntity));
+	//	orderEntity.getLineItems().forEach(item -> item.setOrder(orderEntity));
 		
 		return orderEntity;
 		
