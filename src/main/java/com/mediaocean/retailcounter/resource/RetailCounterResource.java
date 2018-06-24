@@ -7,6 +7,7 @@ import java.util.logging.Logger;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -19,7 +20,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.mediaocean.retailcounter.model.Bill;
 import com.mediaocean.retailcounter.model.LineItem;
 import com.mediaocean.retailcounter.model.Order;
-import com.mediaocean.retailcounter.model.Product;
 import com.mediaocean.retailcounter.service.RetailCounterService;
 
 import io.swagger.annotations.Api;
@@ -52,6 +52,7 @@ public class RetailCounterResource {
 	}
 
 	@GET
+	@Path("/order")
 	@Produces(MediaType.APPLICATION_JSON)
 	@ApiOperation(value = "Find All Orders", 
 	notes = "Find All Orders", 
@@ -65,6 +66,7 @@ public class RetailCounterResource {
 			return Response.status(422).entity("Could not find Orders").build();
 		}
 	}
+	
 	@GET
 	@Path("/order/{orderId}")
 	@Produces(MediaType.APPLICATION_JSON)
@@ -81,6 +83,26 @@ public class RetailCounterResource {
 		}catch(RuntimeException re) {
 			LOGGER.log(Level.SEVERE, re.getMessage());
 			return Response.status(422).entity("Could not find Order by id: " + orderId).build();
+		
+		}
+	}
+	
+	@PUT
+	@Path("/order/{orderId}")
+	@Produces(MediaType.APPLICATION_JSON)
+	@ApiOperation(value = "Update an order with new line items", 
+	notes = "Update an order with new line items", 
+	response = Boolean.class)
+	public Response updateOrder(@PathParam("orderId") String orderId, List<LineItem> newItems) {
+		if(StringUtils.isEmpty(orderId) || !StringUtils.isNumeric(orderId)) {
+			return Response.status(422).entity("Correct orderId is required to find Order").build();
+		}
+		try {
+			retailCounterService.updateOrder(Integer.valueOf(orderId), newItems);
+			return Response.ok().entity(Boolean.TRUE).build();
+		}catch(RuntimeException re) {
+			LOGGER.log(Level.SEVERE, re.getMessage());
+			return Response.status(422).entity("Could not Update order : " + orderId).build();
 		
 		}
 	}
@@ -104,42 +126,4 @@ public class RetailCounterResource {
 		
 		}
 	}
-	
-	/*@POST
-	@Path("/product")
-	@Produces(MediaType.APPLICATION_JSON)
-	@Consumes(MediaType.APPLICATION_JSON)
-	@ApiOperation(value = "Create a new Product - Returns the product id", 
-	notes = "Create a new Product", 
-	response = Integer.class)
-	public Response product(Product product) {
-		try {
-			Integer productId = retailCounterService.createProduct(product);
-			return Response.ok().entity(productId).build();
-		}catch(RuntimeException re) {
-			LOGGER.log(Level.SEVERE, re.getMessage());
-			return Response.status(422).entity("Could not create Product").build();
-		}
-	}
-	
-	
-	@GET
-	@Path("/product/{productId}")
-	@Produces(MediaType.APPLICATION_JSON)
-	@ApiOperation(value = "Find Product by product id", 
-	notes = "Find Product by product id", 
-	response = Product.class)
-	public Response productById(@PathParam("productId") String productId) {
-		if(StringUtils.isEmpty(productId) || !StringUtils.isNumeric(productId)) {
-			return Response.status(422).entity("Correct productId is required to find Product").build();
-		}
-		try {
-			Product product = retailCounterService.productById(Integer.valueOf(productId));
-			return Response.ok().entity(product).build();
-		}catch(RuntimeException re) {
-			LOGGER.log(Level.SEVERE, re.getMessage());
-			return Response.status(422).entity("Could not find Product by id: " + productId).build();
-		
-		}
-	}*/
 }

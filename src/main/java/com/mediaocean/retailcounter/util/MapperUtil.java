@@ -3,6 +3,7 @@ package com.mediaocean.retailcounter.util;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.mediaocean.retailcounter.entity.LineItemEntity;
@@ -12,10 +13,13 @@ import com.mediaocean.retailcounter.model.Bill;
 import com.mediaocean.retailcounter.model.LineItem;
 import com.mediaocean.retailcounter.model.Order;
 import com.mediaocean.retailcounter.model.Product;
+import com.mediaocean.retailcounter.service.RetailCounterService;
 
 @Component
 public class MapperUtil {
 
+	@Autowired
+	private RetailCounterService service;
 	
 	public LineItemEntity toLineItemEntity(LineItem item) {
 		LineItemEntity itemEntity = new LineItemEntity();
@@ -33,7 +37,7 @@ public class MapperUtil {
 				stream().
 				map(this::toLineItemEntity).collect(Collectors.toList()));
 		
-		orderEntity.getLineItems().forEach(item -> item.setOrder(orderEntity));
+		//orderEntity.getLineItems().forEach(item -> item.setOrder(orderEntity));
 		
 		return orderEntity;
 	}
@@ -75,9 +79,17 @@ public class MapperUtil {
 		LineItem item = new LineItem();
 		item.setLineId(leEntity.getLineId());
 		item.setItemQuantity(leEntity.getItemQuantity());
+		item.setItemAmount(leEntity.getItemPrice());
 		item.setProductId(leEntity.getProductId());
 		item.setTaxAmount(leEntity.getItemTaxAmount());
 		item.setTotalLineItemAmount(leEntity.getItemTotalAmount());
+		
+		Product product = service.productById(leEntity.getProductId());
+		if(product != null) {
+			item.setTaxRate(product.getTaxRate());
+			item.setProductPrice(product.getPrice());
+		}
+		
 		return item;
 	}
 	
@@ -109,7 +121,17 @@ public class MapperUtil {
 				.collect(Collectors
 						.summingDouble(LineItemEntity::getItemTotalAmount)));
 		
+		bill.setLineItems(lineItems
+				.stream()
+				.map(li -> toLineItem(li))
+					.collect(Collectors.toList()));
+		
 		return bill;
+	}
+	
+	public LineItemEntity updateLineItem(LineItemEntity oldItem, LineItemEntity newItem) {
+		oldItem = newItem;
+		return oldItem;
 	}
 	
 }

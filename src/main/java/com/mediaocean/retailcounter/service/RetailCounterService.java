@@ -36,6 +36,17 @@ public class RetailCounterService {
 		return orderRepo.createOrder(orderEntity);
 	} 
 	
+	public boolean updateOrder(Integer orderId, List<LineItem> items) {
+		List<LineItemEntity> lineItemEntities = items
+				.stream()
+				.map(mapper::toLineItemEntity)
+					.collect(Collectors.toList());
+		
+		lineItemEntities.forEach(this::calculateTaxAndTotalAmountForLineItem);
+		orderRepo.updateOrder(orderId, lineItemEntities);
+		return true;
+	}
+	
 	public Bill findBill(Integer orderId) {
 		OrderEntity orderEntity = orderEntityById(orderId);
 		if(orderEntity != null)
@@ -54,8 +65,8 @@ public class RetailCounterService {
 	private void calculateTaxAndTotalAmountForLineItem(LineItemEntity le) {
 		ProductEntity product = productRepo.findProductById(le.getProductId());
 		Double taxRate = product.getTaxRate();
-		le.setItemPrice(product.getProductPrice());
-		le.setItemTaxAmount((product.getProductPrice() * taxRate)/100);
+		le.setItemPrice(product.getProductPrice() * le.getItemQuantity());
+		le.setItemTaxAmount((le.getItemPrice() * taxRate)/100);
 		le.setItemTotalAmount(le.getItemPrice() + le.getItemTaxAmount());
 	}
 	

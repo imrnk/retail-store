@@ -1,6 +1,7 @@
 package com.mediaocean.retailcounter.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
@@ -37,11 +38,23 @@ public class OrderRepository {
 	
 	private Integer updateOrder(Integer orderId, LineItemEntity lineItem) {
 		OrderEntity foundOrder = findOrder(orderId);
-		EntityTransaction transaction = em.getTransaction();
-		transaction.begin();
-		foundOrder.addLineItem(lineItem);
-		em.merge(foundOrder);
-		transaction.commit();
+		
+		Optional<LineItemEntity> lineItemToUpdate = foundOrder.getLineItems()
+								.stream()
+								.filter(fl -> fl.getLineId() == lineItem.getLineId())
+								.findFirst();
+		
+		if(lineItemToUpdate.isPresent()) {
+			foundOrder.getLineItems().remove(lineItemToUpdate.get());
+			foundOrder.getLineItems().add(lineItem);
+		
+			EntityTransaction transaction = em.getTransaction();
+			if(!transaction.isActive()) {
+				transaction.begin();
+			}
+			foundOrder = em.merge(foundOrder);
+			transaction.commit();
+		}
 		return foundOrder.getOrderId();
 	}
 

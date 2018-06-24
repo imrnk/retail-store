@@ -9,7 +9,11 @@ public class LineItem {
 	
 	private int itemQuantity;
 	
-	private Double itemPrice;
+	private Double itemAmount;
+	
+	private Double taxRate;
+	
+	private Double productPrice;
 	
 	private Double taxAmount;
 	
@@ -39,12 +43,12 @@ public class LineItem {
 		this.productId = productId;
 	}
 
-	public Double getItemPrice() {
-		return itemPrice;
+	public Double getItemAmount() {
+		return itemAmount;
 	}
 
-	public void setItemPrice(Double itemPrice) {
-		this.itemPrice = itemPrice;
+	public void setItemAmount(Double itemAmount) {
+		this.itemAmount = itemAmount;
 	}
 
 	public Double getTaxAmount() {
@@ -61,6 +65,22 @@ public class LineItem {
 
 	public void setTotalLineItemAmount(Double totalLineItemAmount) {
 		this.totalLineItemAmount = totalLineItemAmount;
+	}
+
+	public Double getTaxRate() {
+		return taxRate;
+	}
+
+	public void setTaxRate(Double taxRate) {
+		this.taxRate = taxRate;
+	}
+
+	public Double getProductPrice() {
+		return productPrice;
+	}
+
+	public void setProductPrice(Double productPrice) {
+		this.productPrice = productPrice;
 	}
 	
 	

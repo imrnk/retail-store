@@ -97,7 +97,7 @@
 			    <configuration>
 				<url>http://localhost:8090/manager/text</url>
 				<server>TomcatServer</server>
-				<path>/retail</path>
+				<path>/retailcounter</path>
 			    </configuration>
 			</plugin>
 		</plugins>

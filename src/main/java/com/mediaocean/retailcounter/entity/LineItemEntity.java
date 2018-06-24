@@ -25,6 +25,9 @@ public class LineItemEntity implements Serializable{
 	@Column(name="product_id")
 	private Integer productId;
 	
+	@Column(name="order_id")
+	private Integer orderId;
+	
 	@Column(name="quantity")
 	private Integer itemQuantity;
 	
@@ -38,7 +41,7 @@ public class LineItemEntity implements Serializable{
 	private Double itemTotalAmount;
 	
 	@ManyToOne
-	@JoinColumn(name="order_id")
+	@JoinColumn(name="order_id", insertable=false, updatable=false)
 	private OrderEntity order;
 
 	public Integer getLineId() {
@@ -96,5 +99,46 @@ public class LineItemEntity implements Serializable{
 	public void setItemTotalAmount(Double itemTotalAmount) {
 		this.itemTotalAmount = itemTotalAmount;
 	}
+
+	@Override
+	public String toString() {
+		return "LineItemEntity [lineId=" + lineId + ", productId=" + productId + ", itemQuantity=" + itemQuantity
+				+ ", itemPrice=" + itemPrice + ", itemTaxAmount=" + itemTaxAmount + ", itemTotalAmount="
+				+ itemTotalAmount + "]";
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((lineId == null) ? 0 : lineId.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		LineItemEntity other = (LineItemEntity) obj;
+		if (lineId == null) {
+			if (other.lineId != null)
+				return false;
+		} else if (!lineId.equals(other.lineId))
+			return false;
+		return true;
+	}
+
+	public Integer getOrderId() {
+		return orderId;
+	}
+
+	public void setOrderId(Integer orderId) {
+		this.orderId = orderId;
+	}
+	
 	
 }
